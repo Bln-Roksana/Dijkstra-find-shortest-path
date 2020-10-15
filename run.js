@@ -34,6 +34,7 @@ function getTheData(){
 
 
 function makeMap(edgeArray){
+    const x=Number.MAX_SAFE_INTEGER;
     //console.log ("When are you loggin me")
     edgeArray.forEach(e => {
         let items=e.split(" ");
@@ -42,7 +43,7 @@ function makeMap(edgeArray){
     })
 
     nodeArray.forEach(e => {
-        scoredNodes.push({node:e, distance:""})
+        scoredNodes.push({node:e, distance:x})
         uncheckedNodes.push(e);
     })
 
@@ -66,16 +67,17 @@ function findTheShortest(nodeStart, nodeEnd){
     let nextNode;
     let nextDistance;
 
-    while (nodeCurrent!=nodeEnd){
+
+    while (uncheckedNodes.length>1){
         checkedNodes.push(nodeCurrent); //push in node I am on 
 
-        //console.log("First log: ", uncheckedNodes.length);
-        let index=uncheckedNodes.map(e => e.node).indexOf(nodeCurrent)
+        //console.log("First log: ", uncheckedNodes);
+        let index=uncheckedNodes.indexOf(nodeCurrent)
         //console.log("First index is: ",index);
         uncheckedNodes.splice(index,1)//I need to pop out the node I am on
-        //console.log("Second log: ", uncheckedNodes.length);
+        //console.log("Second log: ", uncheckedNodes);
         let maxDistance=1000000;
-        console.log("Connections for current node: ", nodeMap.get(nodeCurrent).connections);     
+        //console.log("Connections for current node: ", nodeMap.get(nodeCurrent).connections);     
     
         for (let i=0; i<nodeMap.get(nodeCurrent).connections.length; i++){
             let nodeInfo=nodeMap.get(nodeCurrent).connections[i]
@@ -84,20 +86,23 @@ function findTheShortest(nodeStart, nodeEnd){
             //console.log({node: nodeBeingChecked});
             //console.log("Node being checked: ",nodeBeingChecked);
 
-            let index=uncheckedNodes.map(e => e.node).indexOf(nodeBeingChecked)
+            let index=uncheckedNodes.indexOf(nodeBeingChecked)
             //console.log("Index is: ", index);
             //console.log("Unchecked nodes: ", uncheckedNodes);
             if(index===-1){ //node no longer in the table - already checked
-                console.log("Iam here");
+                //console.log("Iam here");
             }else{
                 // insert new dist value
+                let index=scoredNodes.map(e => e.node).indexOf(nodeBeingChecked)
                 console.log("cumulative distance: ", cumulativeDist, " and node info: ", nodeInfo);
-                uncheckedNodes[index].distance=cumulativeDist + Number(nodeInfo.distance) // do that ->should I change it only if its smaller than what was there
+                if(scoredNodes[index].distance>cumulativeDist + Number(nodeInfo.distance)){
+                    scoredNodes[index].distance=cumulativeDist + Number(nodeInfo.distance) // I change it only if its smaller than what was there
+                }              
                 //get the smallest distance now
-                if(uncheckedNodes[index].distance<=maxDistance){
+                if(scoredNodes[index].distance<=maxDistance){
                     nextNode=nodeMap.get(nodeCurrent).connections[i].node;
-                    nextDistance=uncheckedNodes[index].distance;
-                    maxDistance=uncheckedNodes[index].distance;
+                    nextDistance=scoredNodes[index].distance;
+                    maxDistance=scoredNodes[index].distance;
                     }
                 }
 
@@ -106,11 +111,15 @@ function findTheShortest(nodeStart, nodeEnd){
 
         nodeCurrent=nextNode;
         cumulativeDist=nextDistance;
-        console.log("End of first loop: ", nodeCurrent)
+        //console.log("End of first loop: ", nodeCurrent)
 
     }
 
-    console.log("Cumulative distance is: ", cumulativeDist);
+    //get the distance for endNode
+    let index=scoredNodes.map(e => e.node).indexOf(nodeEnd);
+    console.log("Cumulative distance is: ",scoredNodes[index].distance);
+
+    //console.log("Cumulative distance is: ", cumulativeDist);
 
     //console.log(nodeMap.get(nodeCurrent).connections);
 
