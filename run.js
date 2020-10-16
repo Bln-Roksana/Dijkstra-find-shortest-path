@@ -11,7 +11,7 @@ let cumulativeDist=0;
 
 function getTheData(){
     try {
-        let data = fs.readFileSync('./Test_file_tricky.txt', 'utf8');
+        let data = fs.readFileSync('./citymapper-coding-test-graph.dat', 'utf8');
         //let array=data.toString().split("\n");
         let array=data.split("\n");
         //
@@ -24,8 +24,8 @@ function getTheData(){
             edgeArray.push(array[i].replace("\r",""))
         }
 
-        console.log(nodeArray);
-        console.log("Edge array: ",edgeArray);
+        // console.log(nodeArray);
+        // console.log("Edge array: ",edgeArray);
   
     } catch(e) {
         console.log('Error:', e.stack);
@@ -44,7 +44,7 @@ function makeMap(edgeArray){
     })
 
     nodeArray.forEach(e => {
-        scoredNodes.push({node:e, distance:maxInt})
+        scoredNodes.push({node:e, distance:maxInt, checked:false})
         uncheckedNodes.push(e);
     })
 
@@ -68,19 +68,23 @@ function findTheShortest(nodeStart, nodeEnd){
     let nextNode;
     let nextDistance;
 
-
     while (uncheckedNodes.length>0){
+        let resume=false;
         checkedNodes.push(nodeCurrent); //push in node I am on 
 
         //console.log("First log: ", uncheckedNodes);
         let index=uncheckedNodes.indexOf(nodeCurrent)
         //console.log("First index is: ",index);
         uncheckedNodes.splice(index,1)//I need to pop out the node I am on
-        console.log("unchecked nodes: ", uncheckedNodes);
+        // console.log("unchecked nodes: ", uncheckedNodes);
+        scoredNodes.find(e => e.node===nodeCurrent).checked=true;
         //console.log("Second log: ", uncheckedNodes);
         let maxDistance=1000000;
         //console.log("Connections for current node: ", nodeMap.get(nodeCurrent).connections);     
         console.log("Current node: ", nodeCurrent);
+        if (nodeCurrent==1666775651) {
+            console.log('hi');
+        }
         for (let i=0; i<nodeMap.get(nodeCurrent).connections.length; i++){
             let nodeInfo=nodeMap.get(nodeCurrent).connections[i]
 
@@ -89,10 +93,23 @@ function findTheShortest(nodeStart, nodeEnd){
             //console.log("Node being checked: ",nodeBeingChecked);
 
             let index=uncheckedNodes.indexOf(nodeBeingChecked)
-            //console.log("Index is: ", index);
+            //console.log("Index is: ", index); 
             //console.log("Unchecked nodes: ", uncheckedNodes);
             if(index===-1){ //node no longer in the table - already checked
-                console.log("This node is being checked but no longer here: ", nodeBeingChecked);
+                // console.log("This node is being checked but no longer here: ", nodeBeingChecked);
+                if(index===-1 && uncheckedNodes.length>0){ //dead end. all children were already checked
+                    let allUnchecked=scoredNodes.filter(e => e.checked===false);
+                    let max=Number.MAX_SAFE_INTEGER;
+                    allUnchecked.forEach(e =>{
+                        if(e.distance<max){
+                            cumulativeDist=e.distance;
+                            max=e.distance;
+                            nodeCurrent=e.node;
+                            resume=true;
+                        }
+                    })
+                    
+                }
                 //not needed let test=checkedNodes.indexOf(nodeBeingChecked);
                 //console.log("test: ",test);
             }else{
@@ -112,10 +129,12 @@ function findTheShortest(nodeStart, nodeEnd){
 
 
         }
+        if(resume===false){
+            nodeCurrent=nextNode;
+            cumulativeDist=nextDistance;
+        }
 
-        nodeCurrent=nextNode;
-        cumulativeDist=nextDistance;
-        console.log("ScoredNodes: ", scoredNodes);
+        // console.log("ScoredNodes: ", scoredNodes);
 
         //console.log("End of first loop: ", nodeCurrent)
 
@@ -145,5 +164,5 @@ function runMeHere(nodeA, nodeB){
 
 //runMeHere("a", "e"); 
 //runMeHere(nodeA, nodeB);
-//runMeHere(316684533, 316319874);
-runMeHere("a", "f");
+runMeHere(316684533, 316319874);
+//runMeHere("a", "f");
