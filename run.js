@@ -10,8 +10,7 @@ let start = new Date().getTime();
 
 function getTheData(){
     try {
-        let data = fs.readFileSync('./citymapper-coding-test-graph.dat', 'utf8');
-        //let array=data.toString().split("\n");
+        let data = fs.readFileSync('./Island_test.txt', 'utf8');
         let array=data.split("\n");
         //
         for (let i=1; i<=Number(array[0]); i++){
@@ -43,16 +42,12 @@ function makeMap(edgeArray){
         scoredNodes.push({node:e, distance:maxInt, checked:false})
         uncheckedNodes.push(e);
     })
-
 }
 
 function findTheShortest(nodeStart, nodeEnd){
     let checkedNodes=[];
-
     let nodeCurrent=nodeStart.toString();
-    //console.log(nodeCurrent);
     nodeEnd=nodeEnd.toString();
-    //console.log(nodeEnd)
     let cumulativeDist=0;
     let nextNode;
     let nextDistance;
@@ -99,8 +94,12 @@ function findTheShortest(nodeStart, nodeEnd){
         cumulativeDist=nextDistance;
 
     }
+    if((scoredNodes.find( e => e.node===nodeEnd).distance)===(Number.MAX_SAFE_INTEGER)){
+        console.log("No path possible between these two nodes.");
+    }else{
+        console.log("Cumulative distance is: ", scoredNodes.find( e => e.node===nodeEnd).distance);
+    }
 
-    console.log("Cumulative distance is: ", scoredNodes.find( e => e.node===nodeEnd).distance);
     let end = new Date().getTime();
     console.log("It took ", Math.floor(((end-start) % (1000 * 60)) / 1000), " seconds to run");
 }
@@ -112,5 +111,5 @@ function runMeHere(nodeA, nodeB){
 
 //runMeHere("a", "e"); 
 //runMeHere(nodeA, nodeB);
-runMeHere(316684533, 316319874);
-//runMeHere("a", "f");
+//runMeHere(316722624, 36307089);
+runMeHere("a", "i");

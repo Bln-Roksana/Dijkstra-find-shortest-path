@@ -1,0 +1,31 @@
+13
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+16
+a b 3
+a c 5
+b c 1
+b d 3
+c e 4
+b e 2
+e f 5
+f g 1
+k g 1
+k m 1
+m l 2
+k l 1
+k h 2
+d h 4
+h i 5
+i j 4
